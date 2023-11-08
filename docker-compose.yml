@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+    articles-bdd:
+      build: ./articles-db
+      image: articles-bdd
+      container_name: articles-db
+      ports:
+        - "9000:3306"
+      networks:
+        - v-network
+      volumes:
+        - v-bdd-data:/var/lib/mysql
+
+
+networks:
+  v-network:
+volumes:
+  v-bdd-data:
