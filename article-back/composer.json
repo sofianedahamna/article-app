@@ -1,0 +1,16 @@
+{
+    "name": "digi/keha",
+    "autoload": {
+        "psr-4": {
+            "Digi\\Keha\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kesmo",
+            "email": "dahamnasofiane@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
