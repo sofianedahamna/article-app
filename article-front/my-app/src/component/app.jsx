@@ -3,15 +3,13 @@ import React, { useEffect, useState } from 'react';
 function Articles() {
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState(null);
+    const [libelle, setLibelle] = useState('');
+    const [prix, setPrix] = useState('');
 
-    useEffect(() => {
-        // The URL might need to be adjusted depending on the exact location of your PHP file.
-        const url = "http://localhost:8080/index.php?controller=index&method=getArticle";
-
-        fetch(url)
+    // Fonction pour charger les articles depuis le serveur
+    const loadArticles = () => {
+        fetch("http://localhost:8080/index.php?controller=index&method=getArticle")
             .then(response => {
-                // Always check that the response is OK (status code 200-299)
-                console.log(response);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -23,25 +21,80 @@ function Articles() {
             .catch(error => {
                 setError(error.toString());
             });
-    }, []); // The empty array as a second argument ensures the effect runs only once
+    };
+
+    // Utiliser useEffect pour charger les articles au montage du composant
+    useEffect(() => {
+        loadArticles();
+    }, []);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('libelle', libelle);
+        formData.append('prix', prix);
+
+        fetch("http://localhost:8080/index.php?controller=index&method=AddArticle", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // Réinitialiser le formulaire
+            setLibelle('');
+            setPrix('');
+            // Recharger les articles après l'ajout
+            loadArticles();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+
+    const handleLibelleChange = (e) => {
+        setLibelle(e.target.value);
+    };
+
+    const handlePrixChange = (e) => {
+        setPrix(e.target.value);
+    };
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    // Optionally, you could show a loading indicator while the articles are being fetched
     if (!articles.length) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div>
-            {articles.map((article, index) => (
-                <div key={index}>
-                    <h2>{article.title}</h2>
-                    <p>{article.content}</p>
+        <div className='container'>
+            <main className='main justify-content-center'>
+                <div>
+                    {articles.map((article, index) => (
+                        <div key={index}>
+                            <br/>
+                            <h2>{article.libelle}</h2>
+                            <p>{article.prix}€</p>
+                        </div>
+                    ))}
+                    <h2>Ajouter un article</h2>
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="libelle">libelle</label>
+                        <input type="text" name='libelle' value={libelle} onChange={handleLibelleChange} className="form-control  w-25" />
+                        <label htmlFor="prix">prix</label>
+                        <input type="text" name='prix' value={prix} onChange={handlePrixChange} className="form-control w-25" />
+                        <input type="submit" value="Ajouter" className="btn tex-center bg-info mt-2" />
+                    </form>
                 </div>
-            ))}
+            </main>
         </div>
     );
 }

@@ -30,10 +30,10 @@ class Index extends AbstractController {
 
     public function addArticle() {
          $article = article::insert([
-             'libelle'=> $_GET['libelle'],
-             'prix'=> $_GET['prix'],
+             'libelle'=> $_POST['libelle'],
+             'prix'=> $_POST['prix'],
          ]);
-         header('Location: index.php/?controller=article');
+         return $article;
      }
 
 }

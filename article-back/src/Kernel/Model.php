@@ -26,7 +26,6 @@ class Model extends \PDO {
     public static function getAll()
     {
         $sql = "select * from ".self::getEntityName();
-        var_dump($sql);
         return self::Execute($sql);
     }
 
